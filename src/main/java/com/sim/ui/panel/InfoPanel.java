@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import com.sim.ui.components.ImageSelector;
 import com.sim.ui.components.ProcessListComponents;
 import com.sim.ui.components.ScrollableLogArea;
+import com.sim.ui.frame.ImageFrame;
 
 public class InfoPanel extends JPanel{
 	private static final long serialVersionUID = 4358201489198956131L;
@@ -77,6 +78,9 @@ public class InfoPanel extends JPanel{
 				log.info("Start processing.");
 				String firstPath = firstImageSelector.getSelectedFilePath();
 				String secondPath = secondImageSelector.getSelectedFilePath();
+				
+				String finalResult = null;
+				
 				if(firstPath.equals("C:/") && secondPath.equals("C:/")){
 					/**
 					 * no initial images
@@ -148,6 +152,7 @@ public class InfoPanel extends JPanel{
 								e1.printStackTrace();
 							}
 						}
+						finalResult = result;
 					} else {
 						/**
 						 * 1 initial images
@@ -195,8 +200,10 @@ public class InfoPanel extends JPanel{
 								e1.printStackTrace();
 							}
 						}
+						finalResult = result;
 					}
 				}
+				new ImageFrame(finalResult);
 			}
 		});
 		
