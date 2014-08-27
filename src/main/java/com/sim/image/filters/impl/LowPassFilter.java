@@ -13,7 +13,7 @@ public class LowPassFilter {
 	private BufferedImage image;
 	private String imageName;
 	
-	private static final int LOW_PASS_VALUE = 150;
+	private static final int LOW_PASS_VALUE = 130;
 
 	private static final String PROCESS = "lowPassFilter";
 	public static final String PROCESS_TYPE = "oneImageProcessor";

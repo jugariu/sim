@@ -61,9 +61,46 @@ public class AverageImageFusion {
 		
 		return exportedImagePath;
 	}
+	
+	public String processImages(String firstImagePath, String secondImagePath, String number) {
+		readImages(firstImagePath, secondImagePath);
+		BufferedImage resultedImage = null;
+
+		int firstImageSize = firstImage.getWidth() * firstImage.getHeight();
+		int secondImageSize = secondImage.getWidth() * secondImage.getHeight();
+
+		if (firstImageSize != secondImageSize) {
+			if (firstImageSize > secondImageSize) {
+				int xDiff = (int) Math.round((double)firstImage.getWidth() / (double)secondImage.getWidth());
+				int yDiff = (int) Math.round((double)firstImage.getHeight() / (double)secondImage.getHeight());				
+				resultedImage = getAverageImageFusionDiff(firstImage, secondImage, xDiff, yDiff);
+			} else {
+				int xDiff =  (int) Math.round((double)secondImage.getWidth() / (double)firstImage.getWidth());
+				int yDiff = (int) Math.round((double)secondImage.getHeight() / (double)firstImage.getHeight());
+				resultedImage = getAverageImageFusionDiff(secondImage, firstImage, xDiff, yDiff);
+			}
+		} else {
+			resultedImage = getAverageImageFusion();
+		}
+
+		String exportedImagePath = exportImage(resultedImage, number);
+		
+		return exportedImagePath;
+	}
 
 	public String exportImage(BufferedImage resultedImage) {
 		File outputImage = new File(workingDirPath + "/" + PROCESS + ".jpg");
+		try {
+			ImageIO.write(resultedImage, "jpg", outputImage);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return outputImage.getAbsolutePath();
+	}
+	
+	public String exportImage(BufferedImage resultedImage, String number) {
+		File outputImage = new File(workingDirPath + "/" + PROCESS + number + ".jpg");
 		try {
 			ImageIO.write(resultedImage, "jpg", outputImage);
 		} catch (IOException e) {

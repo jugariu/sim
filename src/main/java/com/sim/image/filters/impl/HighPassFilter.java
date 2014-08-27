@@ -13,7 +13,7 @@ public class HighPassFilter {
 	private BufferedImage image;
 	private String imageName;
 	
-	private static final int HIGH_PASS_VALUE = 200;
+	private static final int HIGH_PASS_VALUE = 170;
 
 	private static final String PROCESS = "highPassFilter";
 	public static final String PROCESS_TYPE = "oneImageProcessor";
