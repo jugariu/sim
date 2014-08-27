@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.swing.JFrame;
 
 import com.sim.image.filters.impl.GrayScaleFilter;
+import com.sim.image.filters.impl.HighPassFilter;
+import com.sim.image.filters.impl.LowPassFilter;
 import com.sim.image.fusion.impl.AverageImageFusion;
 import com.sim.image.fusion.impl.SelectMaximumImageFusion;
 import com.sim.image.fusion.impl.SelectMinimumImageFusion;
@@ -36,6 +38,8 @@ public class MainFrame extends JFrame{
 		processMap.put("Select Minimum Image Fusion", SelectMinimumImageFusion.class);
 		processMap.put("7 Ramps LUT", SevenRampsLUT.class);
 		processMap.put("Gray Scale Filter", GrayScaleFilter.class);
+		processMap.put("High Pass Filter", HighPassFilter.class);
+		processMap.put("Low Pass Filter", LowPassFilter.class);
 				
 		ScrollableLogArea log = new ScrollableLogArea();
 
