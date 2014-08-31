@@ -7,6 +7,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.sim.image.fusion.impl.AverageImageFusion;
+import com.sim.ui.components.ScrollableLogArea;
+
 public class SevenRampsLUT {
 
 	private String imagePath;
@@ -16,8 +19,13 @@ public class SevenRampsLUT {
 	private static final String PROCESS = "sevenRampsLUT";
 	public static final String PROCESS_TYPE = "oneImageProcessor";
 	
-	public SevenRampsLUT(String workingDirPath) {
+	private ScrollableLogArea log;
+	
+	public SevenRampsLUT(String workingDirPath, ScrollableLogArea log) {
 		this.workingDirPath = workingDirPath;
+		this.log = log;
+		
+		log.setLoggedClass(SevenRampsLUT.class.getName());
 	}
 	
 	public void readImage(String imagePath){

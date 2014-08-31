@@ -1,6 +1,8 @@
 package com.sim.ui.components;
 
 import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +10,8 @@ import java.util.Map;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import com.sim.ui.panel.DWTPanel;
 
 
 public class ProcessListComponents extends JPanel{
@@ -20,10 +24,12 @@ public class ProcessListComponents extends JPanel{
 	private ScrollableLogArea log;
 	private Map<String, Class<?>> processMap;
 	private Font font = new Font("Verdana",Font.BOLD,12); 
+	private DWTPanel dwtPanel;
 	
-	public ProcessListComponents(ScrollableLogArea log) {
+	public ProcessListComponents(ScrollableLogArea log, DWTPanel dwtPanel) {
 		this.setBounds(10, 100, 380, 390);
 		this.setLayout(null);
+		this.dwtPanel = dwtPanel;
 		this.log = log;
 		log.setLoggedClass(ProcessListComponents.class.getName());
 		
@@ -41,10 +47,21 @@ public class ProcessListComponents extends JPanel{
 	public void addDropDown(){
 		this.setVisible(false);
 		
-		JComboBox<String> dropDown = new JComboBox<String>(getDropDownList().toArray(new String[getDropDownList().size()]));
+		final JComboBox<String> dropDown = new JComboBox<String>(getDropDownList().toArray(new String[getDropDownList().size()]));
 		dropDown.setBounds(60, (getDropDownBoxes().size()*30)+40, 300, 30);
 		dropDown.setSelectedIndex(-1);
 
+		dropDown.addItemListener(new ItemListener() {
+			
+			public void itemStateChanged(ItemEvent e) {
+				if(dropDown.getSelectedItem().equals("Discrete Wavelet Transform")){
+					dwtPanel.setVisible(true);
+				} else {
+					dwtPanel.setVisible(false);
+				}
+			}
+		});
+		
 		JLabel step = new JLabel("Step " + (getDropDownBoxes().size()+1) + ":");
 		step.setBounds(0, (getSteps().size()*30)+40, 60, 30);
 		step.setFont(font);

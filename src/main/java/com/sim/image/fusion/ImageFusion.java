@@ -6,7 +6,7 @@ public interface ImageFusion {
 	
 	public void readImages(String firstImagePath, String secondImagePath);
 	
-	public void processImages(String firstImagePath, String secondImagePath);
+	public String processImages(String firstImagePath, String secondImagePath);
 	
-	public void exportImage(BufferedImage resultedImage);
+	public String exportImage(BufferedImage resultedImage);
 }

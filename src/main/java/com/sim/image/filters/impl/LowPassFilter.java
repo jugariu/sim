@@ -7,6 +7,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.sim.image.fusion.impl.AverageImageFusion;
+import com.sim.ui.components.ScrollableLogArea;
+
 public class LowPassFilter {
 	private String workingDirPath;
 	private String imagePath;
@@ -17,9 +20,14 @@ public class LowPassFilter {
 
 	private static final String PROCESS = "lowPassFilter";
 	public static final String PROCESS_TYPE = "oneImageProcessor";
+	
+	private ScrollableLogArea log;
 
-	public LowPassFilter(String workingDirPath) {
+	public LowPassFilter(String workingDirPath, ScrollableLogArea log) {
 		this.workingDirPath = workingDirPath;
+		this.log = log;
+		
+		log.setLoggedClass(LowPassFilter.class.getName());
 	}
 	
 	public void readImage(String imagePath) {

@@ -9,6 +9,10 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang.time.StopWatch;
+
+import com.sim.ui.components.ScrollableLogArea;
+
 public class AverageImageFusion {
 
 	private String firstImagePath;
@@ -19,9 +23,14 @@ public class AverageImageFusion {
 
 	private static final String PROCESS = "averageImageFusion";
 	public static final String PROCESS_TYPE = "twoImageProcessor";
+	
+	private ScrollableLogArea log;
 
-	public AverageImageFusion(String workingDirPath) {
+	public AverageImageFusion(String workingDirPath, ScrollableLogArea log) {
 		this.workingDirPath = workingDirPath;
+		this.log = log;
+		
+		log.setLoggedClass(AverageImageFusion.class.getName());
 	}
 
 	public void readImages(String firstImagePath, String secondImagePath) {
@@ -30,13 +39,19 @@ public class AverageImageFusion {
 
 		try {
 			firstImage = ImageIO.read(new File(this.firstImagePath));
+			log.info("First image was loaded.");
 			secondImage = ImageIO.read(new File(this.secondImagePath));
+			log.info("Second image was loaded.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public String processImages(String firstImagePath, String secondImagePath) {
+		StopWatch cronometer = new StopWatch();
+		cronometer.start();
+		log.info("Average Image Fusion processing started.");
+		
 		readImages(firstImagePath, secondImagePath);
 		BufferedImage resultedImage = null;
 
@@ -59,10 +74,17 @@ public class AverageImageFusion {
 
 		String exportedImagePath = exportImage(resultedImage);
 		
+		cronometer.stop();
+		log.info("Average Image Fusion processing finished in " + cronometer.getTime() + "ms.");
+		
 		return exportedImagePath;
 	}
 	
 	public String processImages(String firstImagePath, String secondImagePath, String number) {
+		StopWatch cronometer = new StopWatch();
+		cronometer.start();
+		log.info("Average Image Fusion processing started.");
+		
 		readImages(firstImagePath, secondImagePath);
 		BufferedImage resultedImage = null;
 
@@ -84,6 +106,9 @@ public class AverageImageFusion {
 		}
 
 		String exportedImagePath = exportImage(resultedImage, number);
+		
+		cronometer.stop();
+		log.info("Average Image Fusion processing finished in " + cronometer.getTime() + "ms.");
 		
 		return exportedImagePath;
 	}

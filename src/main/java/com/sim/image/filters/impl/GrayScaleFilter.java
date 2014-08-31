@@ -8,6 +8,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.sim.image.filters.Filter;
+import com.sim.image.fusion.impl.AverageImageFusion;
+import com.sim.ui.components.ScrollableLogArea;
 
 public class GrayScaleFilter implements Filter{
 
@@ -18,9 +20,14 @@ public class GrayScaleFilter implements Filter{
 
 	private static final String PROCESS = "grayScaleFilter";
 	public static final String PROCESS_TYPE = "oneImageProcessor";
+	
+	private ScrollableLogArea log;
 
-	public GrayScaleFilter(String workingDirPath) {
+	public GrayScaleFilter(String workingDirPath, ScrollableLogArea log) {
 		this.workingDirPath = workingDirPath;
+		this.log = log;
+		
+		log.setLoggedClass(GrayScaleFilter.class.getName());
 	}
 	
 	public void readImage(String imagePath) {
@@ -31,6 +38,7 @@ public class GrayScaleFilter implements Filter{
 			imageName = file.getName().substring(0, file.getName().length()-4) + "_";
 			image = ImageIO.read(file);
 		} catch (IOException e) {
+			log.error("Could not read image.", e.getMessage());
 			e.printStackTrace();
 		}
 	}

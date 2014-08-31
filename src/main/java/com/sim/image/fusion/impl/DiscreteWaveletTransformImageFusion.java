@@ -3,13 +3,19 @@ package com.sim.image.fusion.impl;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang.time.StopWatch;
+
 import com.sim.image.filters.impl.HighPassFilter;
 import com.sim.image.filters.impl.LowPassFilter;
+import com.sim.ui.components.ScrollableLogArea;
 
 public class DiscreteWaveletTransformImageFusion {
 	private String firstImagePath;
@@ -18,10 +24,11 @@ public class DiscreteWaveletTransformImageFusion {
 	private BufferedImage secondImage;
 	private String workingDirPath;
 	
-	private static final int DWT_VALUE = 4;
+	private Integer decompositionFactor;
+	private Class<?> fusionType;
+	
 	private HighPassFilter HPFilter;
 	private LowPassFilter LPFilter;
-	private AverageImageFusion aif;
 	private UpSampling sampling;
 	private Map<String, String> resultMap = new HashMap<String, String>();
 	private Map<String, String> map1 = new HashMap<String, String>();
@@ -31,12 +38,16 @@ public class DiscreteWaveletTransformImageFusion {
 	public static final String PROCESS_TYPE = "twoImageProcessor";
 	
 	private String finalResult = null;
+	
+	private ScrollableLogArea log;
 
-	public DiscreteWaveletTransformImageFusion(String workingDirPath) {
+	public DiscreteWaveletTransformImageFusion(String workingDirPath, ScrollableLogArea log) {
 		this.workingDirPath = workingDirPath;
-		HPFilter = new HighPassFilter(workingDirPath);
-		LPFilter = new LowPassFilter(workingDirPath);
-		aif = new AverageImageFusion(workingDirPath);
+		this.log = log;
+		
+		log.setLoggedClass(DiscreteWaveletTransformImageFusion.class.getName());
+		HPFilter = new HighPassFilter(workingDirPath, log);
+		LPFilter = new LowPassFilter(workingDirPath, log);
 		sampling = new UpSampling(workingDirPath);
 	}
 
@@ -46,57 +57,82 @@ public class DiscreteWaveletTransformImageFusion {
 
 		try {
 			firstImage = ImageIO.read(new File(this.firstImagePath));
+			log.info("First image was loaded.");
 			secondImage = ImageIO.read(new File(this.secondImagePath));
+			log.info("Second image was loaded.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public String processImages(String firstImagePath, String secondImagePath) {
-		subSampling(firstImagePath, map1, "", 3);
-		subSampling(secondImagePath, map2, "", 3);
+		StopWatch cronometer = new StopWatch();
+		cronometer.start();
+		log.setVisible(false);
+		log.info("Discrete Wavelet Transform processing started.");
+		log.setVisible(true);
+		
+		subSampling(firstImagePath, map1, "", getDecompositionFactor());
+		subSampling(secondImagePath, map2, "", getDecompositionFactor());
 		int i = 0;
 		for( String key : map1.keySet() ){
-			String img = aif.processImages(map1.get(key), map2.get(key), i+"");
+			String img = "";
+			Method processMethod;
+			try {
+				Constructor<?> processConstructor = getFusionType().getConstructor(String.class, ScrollableLogArea.class);
+				Object processObject = processConstructor.newInstance(workingDirPath, log);
+				processMethod = processObject.getClass().getDeclaredMethod("processImages", String.class, String.class, String.class);
+				img = (String) processMethod.invoke(processObject, map1.get(key), map2.get(key), i+"");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}		
+			
 			resultMap.put(key, img);
 			i++;
 		}
 		
-		doUpSampling(resultMap, 3, 0);
+		doUpSampling(resultMap, getDecompositionFactor());
 		
-		return "";
+		cronometer.stop();
+		log.info("Discrete Wavelet Transform processing finished in " + cronometer.getTime() + "ms.");
+		
+		return finalResult;
 	}
 	
-	private void doUpSampling(Map<String, String> intermediateMap, int n, int j){
-		if(n==0){
-			String key = intermediateMap.keySet().iterator().next();
-			finalResult = intermediateMap.get(key);
-			return;
-		}else{
+	private void doUpSampling(Map<String, String> map, int n){
+			int j=0;
+			Map<String, String> intermediateMap = map;
 			Map<String, String> newMap = new HashMap<String, String>();
-			while (intermediateMap.keySet().size()>1) {
-				String key1 = intermediateMap.keySet().iterator().next();
-				String key2 = "";
-				String path1 = intermediateMap.get(key1);
-				String newKey = "";
-				if(key1.endsWith("_LowPass")){
-					key2 = key1.substring(0, key1.length()-8)+"_HighPass";
-					newKey = key1.substring(0, key1.length()-8);
+			for(int i=1; i<=n;i++){
+				int length = intermediateMap.keySet().size();
+				while (length>0) {
+					String key1 = intermediateMap.keySet().iterator().next();
+					String path1 = intermediateMap.get(key1);
+					String key2 = "";
+					String newKey = "";
+					if(key1.endsWith("_LowPass")){
+						key2 = key1.substring(0, key1.length()-8)+"_HighPass";
+						newKey = key1.substring(0, key1.length()-8);
+					}
+					if(key1.endsWith("_HighPass")){
+						key2 = key1.substring(0, key1.length()-9)+"_LowPass";	
+						newKey = key1.substring(0, key1.length()-9);		
+					}
+					
+					String path2 = intermediateMap.get(key2);
+					String path = sampling.processImages(path1, path2, j+"");
+					j++;
+					intermediateMap.remove(key1);
+					intermediateMap.remove(key2);
+					newMap.put(newKey, path);
+					length=length-2;
 				}
-				if(key1.endsWith("_HighPass")){
-					key2 = key1.substring(0, key1.length()-9)+"_LowPass";	
-					newKey = key1.substring(0, key1.length()-9);		
-				}
-				String path2 = intermediateMap.get(key2);
-				String path = sampling.processImages(path1, path2, j+"");
-				j++;
-				intermediateMap.remove(key1);
-				intermediateMap.remove(key2);
-				newMap.put(newKey, path);
+				intermediateMap = newMap;
+				newMap = new HashMap<String, String>();
 			}
-			doUpSampling(newMap, n--, j);
-		}
+			finalResult =  intermediateMap.get(intermediateMap.keySet().iterator().next());
 	}
+	
 
 	public String exportImage(BufferedImage resultedImage) {
 		File outputImage = new File(workingDirPath + "/" + PROCESS + ".jpg");
@@ -120,5 +156,21 @@ public class DiscreteWaveletTransformImageFusion {
 			subSampling(path1, map, n+process+"_LowPass", n);
 			subSampling(path2, map, n+process+"_HighPass", n);
 		
+	}
+
+	public Integer getDecompositionFactor() {
+		return decompositionFactor;
+	}
+
+	public void setDecompositionFactor(Integer decompositionFactor) {
+		this.decompositionFactor = decompositionFactor;
+	}
+
+	public Class<?> getFusionType() {
+		return fusionType;
+	}
+
+	public void setFusionType(Class<?> fusionType) {
+		this.fusionType = fusionType;
 	}
 }

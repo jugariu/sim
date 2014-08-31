@@ -7,6 +7,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.sim.image.fusion.impl.AverageImageFusion;
+import com.sim.ui.components.ScrollableLogArea;
+
 public class HighPassFilter {
 	private String workingDirPath;
 	private String imagePath;
@@ -17,9 +20,14 @@ public class HighPassFilter {
 
 	private static final String PROCESS = "highPassFilter";
 	public static final String PROCESS_TYPE = "oneImageProcessor";
+	
+	private ScrollableLogArea log;
 
-	public HighPassFilter(String workingDirPath) {
+	public HighPassFilter(String workingDirPath, ScrollableLogArea log) {
 		this.workingDirPath = workingDirPath;
+		this.log = log;
+		
+		log.setLoggedClass(HighPassFilter.class.getName());
 	}
 	
 	public void readImage(String imagePath) {

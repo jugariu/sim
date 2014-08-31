@@ -37,7 +37,7 @@ public class UpSampling {
 
 	public String processImages(String firstImagePath, String secondImagePath, String number) {
 		readImages(firstImagePath, secondImagePath);
-		BufferedImage resultedImage = resultedImage = getSelectMaximumImageFusion();
+		BufferedImage resultedImage = doUpSampling();
 		String resultedPath = exportImage(resultedImage, number);
 		
 		return resultedPath;
@@ -54,7 +54,7 @@ public class UpSampling {
 		return outputImage.getAbsolutePath();
 	}
 
-	private BufferedImage getSelectMaximumImageFusion() {
+	private BufferedImage doUpSampling() {
 		for (int y = 0; y < firstImage.getHeight(); y++) {
 			for (int x = 0; x < firstImage.getWidth(); x++) {
 				int clr1 = firstImage.getRGB(x, y);

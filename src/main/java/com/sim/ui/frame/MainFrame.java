@@ -18,6 +18,7 @@ import com.sim.image.utilities.FolderUtilities;
 import com.sim.ui.components.ImageSelector;
 import com.sim.ui.components.ProcessListComponents;
 import com.sim.ui.components.ScrollableLogArea;
+import com.sim.ui.panel.DWTPanel;
 import com.sim.ui.panel.InfoPanel;
 import com.sim.ui.panel.ProcessPanel;
 
@@ -41,18 +42,20 @@ public class MainFrame extends JFrame{
 		processMap.put("Gray Scale Filter", GrayScaleFilter.class);
 		processMap.put("High Pass Filter", HighPassFilter.class);
 		processMap.put("Low Pass Filter", LowPassFilter.class);
-		processMap.put("dwt", DiscreteWaveletTransformImageFusion.class);
+		processMap.put("Discrete Wavelet Transform", DiscreteWaveletTransformImageFusion.class);
 				
+		DWTPanel dwtPanel = new DWTPanel();
+		
 		ScrollableLogArea log = new ScrollableLogArea();
 
-		ProcessListComponents processListComponents = new ProcessListComponents(log);
+		ProcessListComponents processListComponents = new ProcessListComponents(log, dwtPanel);
 		processListComponents.setDropDownList(new ArrayList<String>(processMap.keySet()));
 
 		ImageSelector firstSelector = new ImageSelector(10, 10);
 		ImageSelector secondSelector = new ImageSelector(10, 45);
 		
 		this.add(new ProcessPanel(processListComponents, firstSelector, secondSelector));
-		this.add(new InfoPanel(processListComponents, log, processMap, workingDir, firstSelector, secondSelector));
+		this.add(new InfoPanel(processListComponents, log, processMap, workingDir, firstSelector, secondSelector, dwtPanel));
 		
 		this.setVisible(true);
 	}

@@ -9,6 +9,10 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang.time.StopWatch;
+
+import com.sim.ui.components.ScrollableLogArea;
+
 public class SelectMinimumImageFusion {
 
 	private String firstImagePath;
@@ -19,9 +23,14 @@ public class SelectMinimumImageFusion {
 
 	private static final String PROCESS = "selectMaximumImageFusion";
 	public static final String PROCESS_TYPE = "twoImageProcessor";
+	
+	private ScrollableLogArea log;
 
-	public SelectMinimumImageFusion(String workingDirPath) {
+	public SelectMinimumImageFusion(String workingDirPath, ScrollableLogArea log) {
 		this.workingDirPath = workingDirPath;
+		this.log = log;
+		
+		log.setLoggedClass(SelectMinimumImageFusion.class.getName());
 	}
 
 	public void readImages(String firstImagePath, String secondImagePath) {
@@ -30,13 +39,19 @@ public class SelectMinimumImageFusion {
 
 		try {
 			firstImage = ImageIO.read(new File(this.firstImagePath));
+			log.info("First image was loaded.");
 			secondImage = ImageIO.read(new File(this.secondImagePath));
+			log.info("Second image was loaded.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void processImages(String firstImagePath, String secondImagePath) {
+	public String processImages(String firstImagePath, String secondImagePath) {
+		StopWatch cronometer = new StopWatch();
+		cronometer.start();
+		log.info("Select Minimum Image Fusion processing started.");
+		
 		readImages(firstImagePath, secondImagePath);
 		BufferedImage resultedImage = null;
 
@@ -57,16 +72,67 @@ public class SelectMinimumImageFusion {
 			resultedImage = getSelectMinimumImageFusion();
 		}
 
-		exportImage(resultedImage);
+		String exportedImagePath = exportImage(resultedImage);
+		
+		cronometer.stop();
+		log.info("Select Minimum Image Fusion processing finished in " + cronometer.getTime() + "ms.");
+		
+		return exportedImagePath;
 	}
 
-	public void exportImage(BufferedImage resultedImage) {
+	public String processImages(String firstImagePath, String secondImagePath, String number) {
+		StopWatch cronometer = new StopWatch();
+		cronometer.start();
+		log.info("Select Minimum Image Fusion processing started."); 
+		
+		readImages(firstImagePath, secondImagePath);
+		BufferedImage resultedImage = null;
+
+		int firstImageSize = firstImage.getWidth() * firstImage.getHeight();
+		int secondImageSize = secondImage.getWidth() * secondImage.getHeight();
+
+		if (firstImageSize != secondImageSize) {
+			if (firstImageSize > secondImageSize) {
+				int xDiff = (int) Math.round((double)firstImage.getWidth() / (double)secondImage.getWidth());
+				int yDiff = (int) Math.round((double)firstImage.getHeight() / (double)secondImage.getHeight());				
+				resultedImage = getSelectedMinimumImageFusionDiff(firstImage, secondImage, xDiff, yDiff);
+			} else {
+				int xDiff =  (int) Math.round((double)secondImage.getWidth() / (double)firstImage.getWidth());
+				int yDiff = (int) Math.round((double)secondImage.getHeight() / (double)firstImage.getHeight());
+				resultedImage = getSelectedMinimumImageFusionDiff(secondImage, firstImage, xDiff, yDiff);
+			}
+		} else {
+			resultedImage = getSelectMinimumImageFusion();
+		}
+
+		String exportedImagePath = exportImage(resultedImage, number);
+		
+		cronometer.stop();
+		log.info("Select Minimum Image Fusion processing finished in " + cronometer.getTime() + "ms.");
+		
+		return exportedImagePath;
+	}
+
+	public String exportImage(BufferedImage resultedImage) {
 		File outputImage = new File(workingDirPath + "/" + PROCESS + ".jpg");
 		try {
 			ImageIO.write(resultedImage, "jpg", outputImage);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		return outputImage.getAbsolutePath();
+	}
+	
+	public String exportImage(BufferedImage resultedImage, String number) {
+		File outputImage = new File(workingDirPath + "/" + PROCESS + number + ".jpg");
+		try {
+			ImageIO.write(resultedImage, "jpg", outputImage);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return outputImage.getAbsolutePath();
 	}
 
 	private BufferedImage getSelectMinimumImageFusion() {
