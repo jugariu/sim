@@ -26,10 +26,12 @@ public class ScrollableLogArea extends JScrollPane {
 		} else {
 			logArea.error(getLoggedClass(), errorMessage[0], errorMessage[1]);
 		}
+		this.update(getGraphics());
 	}
 
 	public void info(String infoMessage) {
 		logArea.info(infoMessage);
+		this.update(getGraphics());
 	}
 
 	public String getLoggedClass() {

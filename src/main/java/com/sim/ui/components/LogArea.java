@@ -20,6 +20,7 @@ public class LogArea extends JTextPane {
 		append(Color.blue, "\n[INFO]  ");
 		append(Color.blue, message);
 		this.setEditable(false);
+		this.update(getGraphics());
 	}
 
 	protected void error(String className, String message) {
@@ -28,6 +29,7 @@ public class LogArea extends JTextPane {
 		append(Color.red, className + ": ");
 		append(Color.red, message);
 		this.setEditable(false);
+		this.update(getGraphics());
 	}
 
 	protected void error(String className, String message, String exceptionMessage) {
@@ -37,6 +39,7 @@ public class LogArea extends JTextPane {
 		append(Color.red, message);
 		append(Color.red, " "+ exceptionMessage);
 		this.setEditable(false);
+		this.update(getGraphics());
 	}
 
 	private void append(Color c, String msg) {

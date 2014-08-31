@@ -37,6 +37,7 @@ public class InfoPanel extends JPanel{
 	private ImageSelector secondImageSelector;
 
 	private JLabel earth;
+	private JLabel satelite;
 	
 	
 	public InfoPanel(final ProcessListComponents processListComponents, final ScrollableLogArea log, final Map<String, Class<?>> processMap, final String workingDir, final ImageSelector firstImageSelector, final ImageSelector secondImageSelector, final DWTPanel dwtPanel) {
@@ -51,11 +52,15 @@ public class InfoPanel extends JPanel{
 		this.log = log;
 		log.setLoggedClass(InfoPanel.class.getName());
 		this.add(log);
-		
+
 		earth = new JLabel();
-		earth.setBounds(400, 5, 170, 170);
+		earth.setBounds(420, 5, 170, 170);
 		earth.setIcon(resizeIcon(new ImageIcon(ClassLoader.class.getResource("/Images/earth.png").getFile().substring(1)), 170, 170));
 		this.add(earth);
+		satelite = new JLabel();
+		satelite.setBounds(320, 5, 100, 100);
+		satelite.setIcon(resizeIcon(new ImageIcon(ClassLoader.class.getResource("/Images/satelit.png").getFile().substring(1)), 100, 100));
+		this.add(satelite);
 		
 		addComponent = new JButton("Add");
 		removeComponent = new JButton("Remove");
