@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang.time.StopWatch;
+
 import com.sim.image.fusion.impl.AverageImageFusion;
 import com.sim.ui.components.ScrollableLogArea;
 
@@ -43,9 +45,16 @@ public class LowPassFilter {
 	}
 
 	public String processImage(String imagePath) {
+		StopWatch cronometer = new StopWatch();
+		cronometer.start();
+		log.info("LowPass Filter processing started.");
+		
 		readImage(imagePath);
 		BufferedImage resultedImage = getLowPassImage();
 		String exportedImagePath = exportImage(resultedImage);
+		
+		cronometer.stop();
+		log.info("LowPass Filter processing finished in " + cronometer.getTime() + "ms.");
 		
 		return exportedImagePath;
 		

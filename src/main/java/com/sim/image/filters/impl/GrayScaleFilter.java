@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang.time.StopWatch;
+
 import com.sim.image.filters.Filter;
 import com.sim.image.fusion.impl.AverageImageFusion;
 import com.sim.ui.components.ScrollableLogArea;
@@ -44,9 +46,16 @@ public class GrayScaleFilter implements Filter{
 	}
 
 	public String processImage(String imagePath) {
+		StopWatch cronometer = new StopWatch();
+		cronometer.start();
+		log.info("Grayscale processing started.");
+		
 		readImage(imagePath);
 		BufferedImage resultedImage = getGrayScaleImage();
 		String exportedImagePath = exportImage(resultedImage);
+
+		cronometer.stop();
+		log.info("Grayscale processing finished in " + cronometer.getTime() + "ms.");
 		
 		return exportedImagePath;
 		
