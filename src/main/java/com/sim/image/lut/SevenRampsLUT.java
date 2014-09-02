@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang.time.StopWatch;
+
 import com.sim.image.fusion.impl.AverageImageFusion;
 import com.sim.ui.components.ScrollableLogArea;
 
@@ -34,14 +36,22 @@ public class SevenRampsLUT {
 		try {
 			image = ImageIO.read(new File(this.imagePath));
 		} catch (IOException e) {
+			log.error("Could not read image.", e.getMessage());
 			e.printStackTrace();
 		}
 	}
 	
 	public String processImage(String imagePath){
+		StopWatch cronometer = new StopWatch();
+		cronometer.start();
+		log.info("Pseudo-coloring processing started.");
+		
 		readImage(imagePath);
 		BufferedImage resultedImage = getSevenRampsLUTImage();
 		String exportedImagePath = exportImage(resultedImage);
+		
+		cronometer.stop();
+		log.appendInfo("Pseudo-coloring processing finished in " + cronometer.getTime() + "ms.");
 		
 		return exportedImagePath;
 	}
@@ -51,6 +61,7 @@ public class SevenRampsLUT {
 		try {
 			ImageIO.write(resultedImage, "jpg", outputImage);
 		} catch (IOException e) {
+			log.error("Could not save intermediate image.", e.getMessage());
 			e.printStackTrace();
 		}
 		
