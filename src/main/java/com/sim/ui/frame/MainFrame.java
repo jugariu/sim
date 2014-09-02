@@ -6,9 +6,11 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
+import com.sim.image.filters.impl.ContrastStretching;
 import com.sim.image.filters.impl.GrayScaleFilter;
 import com.sim.image.filters.impl.HighPassFilter;
 import com.sim.image.filters.impl.LowPassFilter;
+import com.sim.image.filters.impl.SaltAndPepper;
 import com.sim.image.fusion.impl.AverageImageFusion;
 import com.sim.image.fusion.impl.DiscreteWaveletTransformImageFusion;
 import com.sim.image.fusion.impl.SelectMaximumImageFusion;
@@ -38,11 +40,13 @@ public class MainFrame extends JFrame{
 		processMap.put("Average Image Fusion", AverageImageFusion.class);
 		processMap.put("Select Maximum Image Fusion", SelectMaximumImageFusion.class);
 		processMap.put("Select Minimum Image Fusion", SelectMinimumImageFusion.class);
+		processMap.put("Discrete Wavelet Transform", DiscreteWaveletTransformImageFusion.class);
 		processMap.put("7 Ramps LUT", SevenRampsLUT.class);
 		processMap.put("Gray Scale Filter", GrayScaleFilter.class);
 		processMap.put("High Pass Filter", HighPassFilter.class);
 		processMap.put("Low Pass Filter", LowPassFilter.class);
-		processMap.put("Discrete Wavelet Transform", DiscreteWaveletTransformImageFusion.class);
+		processMap.put("Contrast Stretching", ContrastStretching.class);
+		processMap.put("Salt&Pepper", SaltAndPepper.class);
 				
 		DWTPanel dwtPanel = new DWTPanel();
 		

@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,10 +56,9 @@ public class DiscreteWaveletTransformImageFusion {
 
 		try {
 			firstImage = ImageIO.read(new File(this.firstImagePath));
-			log.info("First image was loaded.");
 			secondImage = ImageIO.read(new File(this.secondImagePath));
-			log.info("Second image was loaded.");
 		} catch (IOException e) {
+			log.error("Could not read images.", e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -68,12 +66,13 @@ public class DiscreteWaveletTransformImageFusion {
 	public String processImages(String firstImagePath, String secondImagePath) {
 		StopWatch cronometer = new StopWatch();
 		cronometer.start();
-		log.setVisible(false);
 		log.info("Discrete Wavelet Transform processing started.");
-		log.setVisible(true);
+		log.appendInfo("Decomposition factor: " + getDecompositionFactor());
+		log.appendInfo("DWT fusion type: " + getFusionType().getName());
 		
 		subSampling(firstImagePath, map1, "", getDecompositionFactor());
 		subSampling(secondImagePath, map2, "", getDecompositionFactor());
+				
 		int i = 0;
 		for( String key : map1.keySet() ){
 			String img = "";
@@ -94,12 +93,13 @@ public class DiscreteWaveletTransformImageFusion {
 		doUpSampling(resultMap, getDecompositionFactor());
 		
 		cronometer.stop();
-		log.info("Discrete Wavelet Transform processing finished in " + cronometer.getTime() + "ms.");
+		log.appendInfo("Discrete Wavelet Transform processing finished in " + cronometer.getTime() + "ms.");
 		
 		return finalResult;
 	}
 	
 	private void doUpSampling(Map<String, String> map, int n){
+			
 			int j=0;
 			Map<String, String> intermediateMap = map;
 			Map<String, String> newMap = new HashMap<String, String>();
@@ -139,6 +139,7 @@ public class DiscreteWaveletTransformImageFusion {
 		try {
 			ImageIO.write(resultedImage, "jpg", outputImage);
 		} catch (IOException e) {
+			log.error("Could not save intermediate image.", e.getMessage());
 			e.printStackTrace();
 		}
 		

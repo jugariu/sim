@@ -23,6 +23,14 @@ public class LogArea extends JTextPane {
 		this.update(getGraphics());
 	}
 
+	protected void appendInfo(String message) {
+		this.setEditable(true);
+		append(Color.blue, "\n        ");
+		append(Color.blue, message);
+		this.setEditable(false);
+		this.update(getGraphics());
+	}
+
 	protected void error(String className, String message) {
 		this.setEditable(true);
 		append(Color.red, "\n[ERROR]  ");

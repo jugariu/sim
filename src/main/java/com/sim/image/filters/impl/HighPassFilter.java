@@ -9,16 +9,17 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.lang.time.StopWatch;
 
+import com.sim.image.filters.Filter;
 import com.sim.image.fusion.impl.AverageImageFusion;
 import com.sim.ui.components.ScrollableLogArea;
 
-public class HighPassFilter {
+public class HighPassFilter implements Filter {
 	private String workingDirPath;
 	private String imagePath;
 	private BufferedImage image;
 	private String imageName;
 	
-	private static final int HIGH_PASS_VALUE = 170;
+	private static final int HIGH_PASS_VALUE = 128;
 
 	private static final String PROCESS = "highPassFilter";
 	public static final String PROCESS_TYPE = "oneImageProcessor";
@@ -40,6 +41,7 @@ public class HighPassFilter {
 			imageName = file.getName().substring(0, file.getName().length()-4) + "_";
 			image = ImageIO.read(file);
 		} catch (IOException e) {
+			log.error("Could not read image.", e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -54,7 +56,7 @@ public class HighPassFilter {
 		String exportedImagePath = exportImage(resultedImage);
 		
 		cronometer.stop();
-		log.info("HighPass Filter processing finished in " + cronometer.getTime() + "ms.");
+		log.appendInfo("HighPass Filter processing finished in " + cronometer.getTime() + "ms.");
 		
 		return exportedImagePath;
 		
@@ -65,6 +67,7 @@ public class HighPassFilter {
 		try {
 			ImageIO.write(resultedImage, "jpg", outputImage);
 		} catch (IOException e) {
+			log.error("Could not save intermediate image.", e.getMessage());
 			e.printStackTrace();
 		}
 		

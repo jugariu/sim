@@ -15,7 +15,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import com.sim.ui.components.ImageSelector;
 import com.sim.ui.components.ProcessListComponents;
@@ -130,7 +129,7 @@ public class InfoPanel extends JPanel{
 									//Start processing
 									if(result == null){
 										if(result1 == null && result2 == null){
-											if(processType.equals("oneImageProcessor")){System.out.println("1");
+											if(processType.equals("oneImageProcessor")){
 												Method processMethod = processObject.getClass().getDeclaredMethod("processImage", String.class);
 												result1 = (String) processMethod.invoke(processObject, firstImageSelector.getSelectedFilePath());
 												result2 = (String) processMethod.invoke(processObject, secondImageSelector.getSelectedFilePath());
@@ -149,7 +148,7 @@ public class InfoPanel extends JPanel{
 										} else{
 											String tempResult1 = result1;
 											String tempResult2 = result2;
-											if(processType.equals("oneImageProcessor")){System.out.println("2");
+											if(processType.equals("oneImageProcessor")){
 												Method processMethod = processObject.getClass().getDeclaredMethod("processImage", String.class);
 												result1 = (String) processMethod.invoke(processObject, tempResult1);
 												result2 = (String) processMethod.invoke(processObject, tempResult2);
@@ -199,8 +198,8 @@ public class InfoPanel extends JPanel{
 								try {
 									//Creating instance of the process
 									Class<?> processClass = processMap.get(processName);
-									Constructor<?> processConstructor = processClass.getConstructor(String.class);
-									Object processObject = processConstructor.newInstance(workingDir);
+									Constructor<?> processConstructor = processClass.getConstructor(String.class, ScrollableLogArea.class);
+									Object processObject = processConstructor.newInstance(workingDir, log);
 									
 									//Getting the type of the process
 									Field processTypeField = processObject.getClass().getField("PROCESS_TYPE");

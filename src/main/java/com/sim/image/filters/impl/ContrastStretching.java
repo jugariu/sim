@@ -10,26 +10,29 @@ import javax.imageio.ImageIO;
 import org.apache.commons.lang.time.StopWatch;
 
 import com.sim.image.filters.Filter;
-import com.sim.image.fusion.impl.AverageImageFusion;
 import com.sim.ui.components.ScrollableLogArea;
 
-public class GrayScaleFilter implements Filter{
+public class ContrastStretching implements Filter {
 
 	private String workingDirPath;
 	private String imagePath;
 	private BufferedImage image;
 	private String imageName;
+	
+	private int lMax;
+	private int lMin;
+	private static final int MP=255;
 
-	private static final String PROCESS = "grayScaleFilter";
+	private static final String PROCESS = "contrastStretchingFilter";
 	public static final String PROCESS_TYPE = "oneImageProcessor";
 	
 	private ScrollableLogArea log;
 
-	public GrayScaleFilter(String workingDirPath, ScrollableLogArea log) {
+	public ContrastStretching(String workingDirPath, ScrollableLogArea log) {
 		this.workingDirPath = workingDirPath;
 		this.log = log;
 		
-		log.setLoggedClass(GrayScaleFilter.class.getName());
+		log.setLoggedClass(HighPassFilter.class.getName());
 	}
 	
 	public void readImage(String imagePath) {
@@ -48,14 +51,14 @@ public class GrayScaleFilter implements Filter{
 	public String processImage(String imagePath) {
 		StopWatch cronometer = new StopWatch();
 		cronometer.start();
-		log.info("Grayscale processing started.");
+		log.info("Contrast Stretching processing started.");
 		
 		readImage(imagePath);
-		BufferedImage resultedImage = getGrayScaleImage();
+		BufferedImage resultedImage = getContrastStretchingImage();
 		String exportedImagePath = exportImage(resultedImage);
-
+		
 		cronometer.stop();
-		log.appendInfo("Grayscale processing finished in " + cronometer.getTime() + "ms.");
+		log.appendInfo("Contrast Stretching processing finished in " + cronometer.getTime() + "ms.");
 		
 		return exportedImagePath;
 		
@@ -73,17 +76,16 @@ public class GrayScaleFilter implements Filter{
 		return outputImage.getAbsolutePath();
 	}
 	
-	private BufferedImage getGrayScaleImage() {
+	public BufferedImage getContrastStretchingImage(){
+		setLimits();
+		log.appendInfo("The limits for Contrast Stretching: Max=" + getlMax() + " Min=" + getlMin() + ".");
 		for (int y = 0; y < image.getHeight(); y++) {
 			for (int x = 0; x < image.getWidth(); x++) {
 				int clr = image.getRGB(x, y);
-				int red = (clr & 0x00ff0000) >> 16;
-				int green = (clr & 0x0000ff00) >> 8;
-				int blue = clr & 0x000000ff;
-
-				int grayScaleValue = (red + green + blue) / 3;
-
-				Color color = new Color(grayScaleValue, grayScaleValue, grayScaleValue);
+				int pixelValue = clr & 0x000000ff;
+				
+				float contrastStretchingValue = ((float)(pixelValue - getlMin()) / (getlMax() - getlMin()))*MP;
+				Color color = new Color(Math.round(contrastStretchingValue), Math.round(contrastStretchingValue), Math.round(contrastStretchingValue));
 				int rgb = color.getRGB();
 
 				image.setRGB(x, y, rgb);
@@ -92,5 +94,37 @@ public class GrayScaleFilter implements Filter{
 
 		return image;
 	}
+	
+	private void setLimits(){
+		setlMax(0);
+		setlMin(255);
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
+				int clr = image.getRGB(x, y);
+				int pixelValue = clr & 0x000000ff;
 
+				if(pixelValue>lMax)
+					setlMax(pixelValue);
+				if(pixelValue<lMin)
+					setlMin(pixelValue);
+				
+			}
+		}
+	}
+
+	public int getlMax() {
+		return lMax;
+	}
+
+	public void setlMax(int lMax) {
+		this.lMax = lMax;
+	}
+
+	public int getlMin() {
+		return lMin;
+	}
+
+	public void setlMin(int lMin) {
+		this.lMin = lMin;
+	}
 }

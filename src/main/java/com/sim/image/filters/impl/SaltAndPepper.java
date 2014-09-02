@@ -9,27 +9,25 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.lang.time.StopWatch;
 
-import com.sim.image.filters.Filter;
-import com.sim.image.fusion.impl.AverageImageFusion;
 import com.sim.ui.components.ScrollableLogArea;
 
-public class GrayScaleFilter implements Filter{
+public class SaltAndPepper {
 
 	private String workingDirPath;
 	private String imagePath;
 	private BufferedImage image;
 	private String imageName;
 
-	private static final String PROCESS = "grayScaleFilter";
+	private static final String PROCESS = "saltAndPepperFilter";
 	public static final String PROCESS_TYPE = "oneImageProcessor";
 	
 	private ScrollableLogArea log;
 
-	public GrayScaleFilter(String workingDirPath, ScrollableLogArea log) {
+	public SaltAndPepper(String workingDirPath, ScrollableLogArea log) {
 		this.workingDirPath = workingDirPath;
 		this.log = log;
 		
-		log.setLoggedClass(GrayScaleFilter.class.getName());
+		log.setLoggedClass(HighPassFilter.class.getName());
 	}
 	
 	public void readImage(String imagePath) {
@@ -48,17 +46,49 @@ public class GrayScaleFilter implements Filter{
 	public String processImage(String imagePath) {
 		StopWatch cronometer = new StopWatch();
 		cronometer.start();
-		log.info("Grayscale processing started.");
+		log.info("Salt&Pepper Filter processing started.");
 		
 		readImage(imagePath);
-		BufferedImage resultedImage = getGrayScaleImage();
+		BufferedImage resultedImage = removeSaltAndPepperNoise();
 		String exportedImagePath = exportImage(resultedImage);
-
+		
 		cronometer.stop();
-		log.appendInfo("Grayscale processing finished in " + cronometer.getTime() + "ms.");
+		log.appendInfo("Salt&Pepper Filter processing finished in " + cronometer.getTime() + "ms.");
 		
 		return exportedImagePath;
 		
+	}
+	
+	public BufferedImage removeSaltAndPepperNoise() {
+		for (int y = 1; y < image.getHeight() - 1; y++) {
+			for (int x = 1; x < image.getWidth() - 1; x++) {
+				int center = image.getRGB(x, y);
+				int centerColor = (center & 0x00ff0000) >> 16;
+
+				if (centerColor > 200 || centerColor < 50) {
+					int left = image.getRGB(x - 1, y);
+					int right = image.getRGB(x + 1, y);
+					int down = image.getRGB(x, y + 1);
+					int up = image.getRGB(x, y - 1);
+
+					int leftColor = (left & 0x00ff0000) >> 16;
+					int rightColor = (right & 0x00ff0000) >> 16;
+					int downColor = (down & 0x00ff0000) >> 16;
+					int upColor = (up & 0x00ff0000) >> 16;
+
+					int value = (leftColor + rightColor + upColor + downColor) / 4;
+					Color color = new Color(value, value, value);
+					int rgb = color.getRGB();
+
+					image.setRGB(x, y, rgb);
+				} else {
+					image.setRGB(x, y, center);
+				}
+
+			}
+		}
+
+		return image;
 	}
 
 	public String exportImage(BufferedImage resultedImage) {
@@ -72,25 +102,4 @@ public class GrayScaleFilter implements Filter{
 		
 		return outputImage.getAbsolutePath();
 	}
-	
-	private BufferedImage getGrayScaleImage() {
-		for (int y = 0; y < image.getHeight(); y++) {
-			for (int x = 0; x < image.getWidth(); x++) {
-				int clr = image.getRGB(x, y);
-				int red = (clr & 0x00ff0000) >> 16;
-				int green = (clr & 0x0000ff00) >> 8;
-				int blue = clr & 0x000000ff;
-
-				int grayScaleValue = (red + green + blue) / 3;
-
-				Color color = new Color(grayScaleValue, grayScaleValue, grayScaleValue);
-				int rgb = color.getRGB();
-
-				image.setRGB(x, y, rgb);
-			}
-		}
-
-		return image;
-	}
-
 }

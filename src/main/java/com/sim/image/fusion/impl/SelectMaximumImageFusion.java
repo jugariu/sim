@@ -40,10 +40,9 @@ public class SelectMaximumImageFusion implements ImageFusion {
 
 		try {
 			firstImage = ImageIO.read(new File(this.firstImagePath));
-			log.info("First image was loaded.");
 			secondImage = ImageIO.read(new File(this.secondImagePath));
-			log.info("Second image was loaded.");
 		} catch (IOException e) {
+			log.error("Could not read images.", e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -59,24 +58,30 @@ public class SelectMaximumImageFusion implements ImageFusion {
 		int firstImageSize = firstImage.getWidth() * firstImage.getHeight();
 		int secondImageSize = secondImage.getWidth() * secondImage.getHeight();
 
+		log.appendInfo("First image size = " + firstImage.getWidth() + "x" + firstImage.getHeight());
+		log.appendInfo("Second image size = " + secondImage.getWidth() + "x" + secondImage.getHeight());
+
 		if (firstImageSize != secondImageSize) {
 			if (firstImageSize > secondImageSize) {
 				int xDiff = (int) Math.round((double)firstImage.getWidth() / (double)secondImage.getWidth());
-				int yDiff = (int) Math.round((double)firstImage.getHeight() / (double)secondImage.getHeight());				
+				int yDiff = (int) Math.round((double)firstImage.getHeight() / (double)secondImage.getHeight());	
+				log.appendInfo("Size difference between images: " + xDiff + "x" + yDiff);			
 				resultedImage = getSelectedMaximumImageFusionDiff(firstImage, secondImage, xDiff, yDiff);
 			} else {
 				int xDiff =  (int) Math.round((double)secondImage.getWidth() / (double)firstImage.getWidth());
 				int yDiff = (int) Math.round((double)secondImage.getHeight() / (double)firstImage.getHeight());
+				log.appendInfo("Size difference between images: " + xDiff + "x" + yDiff);
 				resultedImage = getSelectedMaximumImageFusionDiff(secondImage, firstImage, xDiff, yDiff);
 			}
 		} else {
+			log.appendInfo("No size difference between images.");
 			resultedImage = getSelectMaximumImageFusion();
 		}
 
 		String exportedImagePath = exportImage(resultedImage);
 		
 		cronometer.stop();
-		log.info("Select Maximum Image Fusion processing finished in " + cronometer.getTime() + "ms.");
+		log.appendInfo("Select Maximum Image Fusion processing finished in " + cronometer.getTime() + "ms.");
 		
 		return exportedImagePath;
 	}
@@ -92,24 +97,30 @@ public class SelectMaximumImageFusion implements ImageFusion {
 		int firstImageSize = firstImage.getWidth() * firstImage.getHeight();
 		int secondImageSize = secondImage.getWidth() * secondImage.getHeight();
 
+		log.appendInfo("First image size = " + firstImage.getWidth() + "x" + firstImage.getHeight());
+		log.appendInfo("Second image size = " + secondImage.getWidth() + "x" + secondImage.getHeight());
+
 		if (firstImageSize != secondImageSize) {
 			if (firstImageSize > secondImageSize) {
 				int xDiff = (int) Math.round((double)firstImage.getWidth() / (double)secondImage.getWidth());
-				int yDiff = (int) Math.round((double)firstImage.getHeight() / (double)secondImage.getHeight());				
+				int yDiff = (int) Math.round((double)firstImage.getHeight() / (double)secondImage.getHeight());	
+				log.appendInfo("Size difference between images: " + xDiff + "x" + yDiff);						
 				resultedImage = getSelectedMaximumImageFusionDiff(firstImage, secondImage, xDiff, yDiff);
 			} else {
 				int xDiff =  (int) Math.round((double)secondImage.getWidth() / (double)firstImage.getWidth());
 				int yDiff = (int) Math.round((double)secondImage.getHeight() / (double)firstImage.getHeight());
+				log.appendInfo("Size difference between images: " + xDiff + "x" + yDiff);			
 				resultedImage = getSelectedMaximumImageFusionDiff(secondImage, firstImage, xDiff, yDiff);
 			}
 		} else {
+			log.appendInfo("No size difference between images.");
 			resultedImage = getSelectMaximumImageFusion();
 		}
 
 		String exportedImagePath = exportImage(resultedImage, number);
 		
 		cronometer.stop();
-		log.info("Select Maximum Image Fusion processing finished in " + cronometer.getTime() + "ms.");
+		log.appendInfo("Select Maximum Image Fusion processing finished in " + cronometer.getTime() + "ms.");
 		
 		return exportedImagePath;
 	}
@@ -119,6 +130,7 @@ public class SelectMaximumImageFusion implements ImageFusion {
 		try {
 			ImageIO.write(resultedImage, "jpg", outputImage);
 		} catch (IOException e) {
+			log.error("Could not save intermediate image.", e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -130,6 +142,7 @@ public class SelectMaximumImageFusion implements ImageFusion {
 		try {
 			ImageIO.write(resultedImage, "jpg", outputImage);
 		} catch (IOException e) {
+			log.error("Could not save intermediate image.", e.getMessage());
 			e.printStackTrace();
 		}
 
