@@ -20,6 +20,7 @@ import com.sim.ui.components.ImageSelector;
 import com.sim.ui.components.ProcessListComponents;
 import com.sim.ui.components.ScrollableLogArea;
 import com.sim.ui.frame.ImageFrame;
+import com.sim.ui.frame.RulesFrame;
 
 public class InfoPanel extends JPanel{
 	private static final long serialVersionUID = 4358201489198956131L;
@@ -27,6 +28,7 @@ public class InfoPanel extends JPanel{
 	private ProcessListComponents processListComponents;
 	private JButton addComponent;
 	private JButton removeComponent;
+	private JButton rules;
 	private JButton startProcess;
 	private ScrollableLogArea log;
 	private Map<String, Class<?>> processMap;
@@ -65,7 +67,7 @@ public class InfoPanel extends JPanel{
 		removeComponent = new JButton("Remove");
 		startProcess = new JButton("Start");
 		
-		addComponent.setBounds(150, 10, 150, 30);
+		addComponent.setBounds(115, 10, 100, 30);
 		this.add(addComponent);
 		addComponent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -74,7 +76,7 @@ public class InfoPanel extends JPanel{
 			}
 		});
 		
-		removeComponent.setBounds(150, 45, 150, 30);
+		removeComponent.setBounds(215, 10, 100, 30);
 		this.add(removeComponent);
 		removeComponent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -83,10 +85,19 @@ public class InfoPanel extends JPanel{
 			}
 		});
 		
+		rules = new JButton("Rules");
+		rules.setBounds(140, 45, 150, 30);
+		this.add(rules);
+		rules.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				new RulesFrame();
+			}
+		});
+		
 		this.add(dwtPanel);
 		this.setVisible(false);
 		
-		startProcess.setBounds(150, 80, 150, 30);
+		startProcess.setBounds(140, 80, 150, 30);
 		startProcess.setForeground(Color.red);
 		Font font = new Font("Broadway",Font.BOLD,16); 
 		startProcess.setFont(font);

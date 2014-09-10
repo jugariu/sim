@@ -1,0 +1,9 @@
+Mediu Urban#Red>90,Red<=120,MIR<=141,Texture>21,Slope<=1,DEM<=480
+Livada#Green<=77,NIR>91,Slope<=1
+Ierburi Fluviale#Red>60,Red<=90,NIR>57,NIR<=80,MIR>93
+Paduri Degradate#Red<=82,Green>49,NIR>81,NIR<=96
+Paduri Dense#Green<77,NIR>96,DEM>487&&Green<=49,NIR>78,DEM>475
+Albie de Rau#Red>111,Green>72,MIR<=162,Texture<20,DEM>450&&Red>118,NIR<=79
+Teren Necultivat#Red>82,MIR>162
+Teren Cultivat#Red>82,Red<=109,MIR>141
+Gradini#Red<=69,Red<=109,MIR>98,MIR<=107,DEM>448,DEM<=470,Slope<=1&&Green<=44,MIR>107,MIR<=107,DEM<470,Slope<1&&Red<=78,Green<=49,NIR>100,NIR<=118,MIR>107,DEM>449,DEM<470,Slope<1
